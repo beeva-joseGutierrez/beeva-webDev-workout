@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>HTML5 Example</title>
+	<script src="js/lib/vendor/modernizr-custom.js"></script>
+	
+</head>
+<body>
+	<header>
+		<table id="table">
+		</table>
+	</header>
+
+	<canvas id="myCanvas" width="200" height="100" style="border:1px solid #c3c3c3;">
+	Your browser does not support the HTML5 canvas tag.
+	</canvas>
+	
+
+	<footer>
+		...
+	</footer>
+
+	<script type="text/javascript">
+
+		var components = ["canvas", "flash", "geolocation", "touch", "webglextensions"];
+
+		for (var i = 0; i<components.length; i++) {
+			var table = document.getElementById("table");
+			var header = table.createTHead();
+		    var row = table.insertRow(0);
+		    var cell1 = row.insertCell(0);
+		    cell1.innerHTML = "<b>"+components[i]+"</b>";
+		    var cell2 = row.insertCell(1);
+		    var functionName = "Modernizr."+components[i];
+		    //if(window[functionName]()) {
+		    if(Modernizr[components[i]]) {
+				cell2.innerHTML = "Compatible";
+			} else {
+				cell2.innerHTML = "Incompatible";
+			}
+		    var cell3 = row.insertCell(2);
+		    cell3.innerHTML = "Comprobamos nativo";
+		}
+
+
+		//Draw in Canvas
+	    var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.beginPath();
+		ctx.arc(95,50,40,0,2*Math.PI);
+		ctx.stroke();
+
+	</script>
+
+</body>
+</html>
