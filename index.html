@@ -6,15 +6,14 @@
 	<script src="js/lib/vendor/modernizr-custom.js"></script>
 	
 </head>
-<body>
+<body onload="start()">
 	<header>
 		<table id="table">
 		</table>
 	</header>
 
-	<canvas id="myCanvas" width="200" height="100" style="border:1px solid #c3c3c3;">
-	Your browser does not support the HTML5 canvas tag.
-	</canvas>
+	<canvas id="canvas" width="200" height="200">
+  	</canvas>
 	
 
 	<footer>
@@ -23,6 +22,42 @@
 
 	<script type="text/javascript">
 
+		//Try to use WebGL
+	    var c = document.getElementById("canvas");
+
+	    var gl;
+	    var mvMatrixStack = [];
+
+		function start() {
+			gl = initWebGL(c);
+			if (gl) {
+				gl.clearColor(1.0, 0.0, 1.0, 0.5);
+				gl.enable(gl.DEPTH_TEST);
+				gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+			}
+
+			
+
+		}
+
+		function initWebGL(canvas) {
+		  gl = null;
+		  
+		  try {
+		    gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+		  }
+		  catch(e) {}
+		  if (!gl) {
+		    gl = null;
+		  }
+  
+  		return gl;
+		}
+
+
+
+
+		//Table
 		var components = ["canvas", "flash", "geolocation", "touch", "webglextensions"];
 
 		for (var i = 0; i<components.length; i++) {
@@ -32,24 +67,27 @@
 		    var cell1 = row.insertCell(0);
 		    cell1.innerHTML = "<b>"+components[i]+"</b>";
 		    var cell2 = row.insertCell(1);
-		    var functionName = "Modernizr."+components[i];
-		    //if(window[functionName]()) {
 		    if(Modernizr[components[i]]) {
 				cell2.innerHTML = "Compatible";
 			} else {
 				cell2.innerHTML = "Incompatible";
 			}
 		    var cell3 = row.insertCell(2);
-		    cell3.innerHTML = "Comprobamos nativo";
+		    if(navigator[components[i]]) {
+				cell3.innerHTML = "Compatible";
+			} else {
+				var e = document.createElement(components[i]);
+				if (Object.prototype.toString.call(e) !== '[object HTMLUnknownElement]')
+					cell3.innerHTML = "Compatible";
+				else 
+					cell3.innerHTML = "Incompatible";
+			}
+		    //cell3.innerHTML = "Comprobamos nativo";
 		}
 
-
-		//Draw in Canvas
-	    var c = document.getElementById("myCanvas");
-		var ctx = c.getContext("2d");
-		ctx.beginPath();
-		ctx.arc(95,50,40,0,2*Math.PI);
-		ctx.stroke();
+		if (Modernizr.canvas) {
+			console.log("hola");
+		}
 
 	</script>
 
