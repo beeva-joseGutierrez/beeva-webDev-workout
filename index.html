@@ -1,26 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>HTML5 Example</title>
+	<title>HTML5 Feature Detection</title>
+	<style type="text/css">
+		table {
+			margin: auto;
+		}
+		canvas{
+			margin-top: 2em;
+		}
+	</style>
 	<script src="js/lib/vendor/modernizr-custom.js"></script>
 	
 </head>
-<body onload="start()">
+<body onload="start();">
 	<header>
-		<table id="table">
-		</table>
+		<table id="table"></table>
 	</header>
 
 	<canvas id="canvas" width="200" height="200">
   	</canvas>
-	
-
-	<footer>
-		...
-	</footer>
 
 	<script type="text/javascript">
+
+		//Table
+		var components = ["canvas", "notification", "geolocation", "cookies", "json","webglextensions", "localstorage"];
+
+		var checkNativeComponents = [];
+
+		checkNativeComponents[0] = !!document.createElement("canvas").getContext;
+		checkNativeComponents[1] = !!window.webkitNotifications;
+		checkNativeComponents[2] = !!navigator.geolocation;
+		checkNativeComponents[3] = !!navigator.cookieEnabled;
+		checkNativeComponents[4] = !!(JSON && typeof JSON.parse === 'function');
+		checkNativeComponents[5] = !!window.WebGLRenderingContext;
+		checkNativeComponents[6] = !!typeof Storage;
+
+		for (var i = 0; i<components.length; i++) {
+			var table = document.getElementById("table");
+			var header = table.createTHead();
+		    var row = table.insertRow(0);
+		    var cell1 = row.insertCell(0);
+		    cell1.innerHTML = "<b>"+components[i]+"</b>";
+		    var cell2 = row.insertCell(1);
+		    var checkbox1 = document.createElement('input');
+		    checkbox1.type = "checkbox";
+		    if(Modernizr[components[i]]) {
+				checkbox1.checked = true;
+			}
+			cell2.appendChild(checkbox1);
+		    var cell3 = row.insertCell(2);
+		    var checkbox2 = document.createElement('input');
+		    checkbox2.type = "checkbox";
+		    if(!!checkNativeComponents[i]) {
+				checkbox2.checked = true;
+			}
+			cell3.appendChild(checkbox2);
+		}
+
 
 		//Try to use WebGL
 	    var c = document.getElementById("canvas");
@@ -35,59 +73,20 @@
 				gl.enable(gl.DEPTH_TEST);
 				gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 			}
-
-			
-
 		}
 
 		function initWebGL(canvas) {
-		  gl = null;
-		  
-		  try {
-		    gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-		  }
-		  catch(e) {}
-		  if (!gl) {
-		    gl = null;
-		  }
-  
-  		return gl;
+		gl = null;
+
+		try {
+			gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 		}
-
-
-
-
-		//Table
-		var components = ["canvas", "flash", "geolocation", "touch", "webglextensions"];
-
-		for (var i = 0; i<components.length; i++) {
-			var table = document.getElementById("table");
-			var header = table.createTHead();
-		    var row = table.insertRow(0);
-		    var cell1 = row.insertCell(0);
-		    cell1.innerHTML = "<b>"+components[i]+"</b>";
-		    var cell2 = row.insertCell(1);
-		    if(Modernizr[components[i]]) {
-				cell2.innerHTML = "Compatible";
-			} else {
-				cell2.innerHTML = "Incompatible";
-			}
-		    var cell3 = row.insertCell(2);
-		    if(navigator[components[i]]) {
-				cell3.innerHTML = "Compatible";
-			} else {
-				var e = document.createElement(components[i]);
-				if (Object.prototype.toString.call(e) !== '[object HTMLUnknownElement]')
-					cell3.innerHTML = "Compatible";
-				else 
-					cell3.innerHTML = "Incompatible";
-			}
-		    //cell3.innerHTML = "Comprobamos nativo";
+		catch(e) {}
+		if (!gl) {
+			gl = null;
 		}
-
-		if (Modernizr.canvas) {
-			console.log("hola");
-		}
+		return gl;
+		}		
 
 	</script>
 
