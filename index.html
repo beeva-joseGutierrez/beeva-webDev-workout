@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+</head>
+<body>
+
+	<div id="clock"></div>
+
+</body>
+
+
+<script type="text/javascript">
+
+	(function () {
+		printTime();
+	})();
+
+
+	function getTimeNow(callback) {
+		$.ajax({
+			type: 'get',
+			dataType: 'jsonp',
+			url: 'http://www.timeapi.org/utc/now',
+			error: function(xhr, status, error) {
+				callback(1, status);
+			},
+			success: function(data) {
+				callback(0, data);
+			}
+		});
+	}
+
+
+	function printTime () {
+		getTimeNow(function (error, value) {
+			var clock = document.getElementById('clock');
+			var text = "";
+			if(error === 1) {
+				text = document.createTextNode('Imposible imprimir por: '+value);
+				clock.appendChild(text);
+			}
+			else {
+				if(error === 0) {
+					text = document.createTextNode('tiempo = '+value);
+					clock.appendChild(text);
+				}
+				else {
+					text = document.createTextNode('Unknown error');
+					clock.appendChild(text);
+				}
+			}
+		});
+	}
+
+</script>
+
+</html>
