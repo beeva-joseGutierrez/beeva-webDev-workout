@@ -1,0 +1,27 @@
+{
+	"alumno": {
+		"nombre": "Bertín",
+		"apellido": "Osborne",
+		"expediente": {
+			"idExpediente": 1,
+			"listaAsignaturas": [
+				{
+					"id": "mates",
+					"nota": 9,
+					"fechaExamen": "1453455014",
+					"lugar":  "GPS"
+				},
+				{
+					"id": "lengua",
+					"nota": 5,
+					"fechaExamen": "1453460625",
+					"lugar": "GPS"
+				}
+			],
+			"informeConducta": {
+				"perfil": "no conflictivo",
+				"expulsiones": 0
+			}
+		}
+	}
+}
