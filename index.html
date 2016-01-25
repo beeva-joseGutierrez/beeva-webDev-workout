@@ -26,16 +26,7 @@
 <body>
 
 <div class="container-fluid">
-		<div class="row">
-			<div class="col-md-8 col-md-offset-3">
-			<h1 id=""></h1>
-			</div>
-			<div class="col-md-8 col-md-offset-3">
-			<h1 id="title"></h1>
-			</div>
-			<div class="col-md-8 col-md-offset-3">
-			<h1 id="title"></h1>
-			</div>
+		<div class="row" id="showPromises">
 		</div>
 	</div>
 
@@ -55,14 +46,19 @@
 				returnAsignaturaById(alumno, 'mates'),
 				returnUltimoExamen(alumno),
 				fechaActual()
-
-			]).then(function(promises) {
-				console.log(promises);
+			])
+			.then(function(promises) {
+				for(var i = 0; i<promises.length; i++) {
+					pintaResultados('Promise '+i+': '+promises[i]);
+				}
+			})
+			.fail(function(error) {
+				pintaResultados(error);
 			});
 
 
 		},function() {
-			console.log("no veo json");
+			pintaResultados("no veo json");
 		});
 
 
@@ -72,7 +68,11 @@
 
 			setTimeout(function() {
 				var asignatura = _.where(json.alumno.expediente.listaAsignaturas, {id:idAsignatura});
-				promise1.resolve(asignatura);
+				if (asignatura.length === 0) {
+					promise1.reject(new Error('Cannot find asignatura'));
+				} else {
+					promise1.resolve('Exam result of '+idAsignatura+': '+asignatura[0].nota);
+				}
 			}, 1000);
 
 			return promise1.promise;
@@ -84,12 +84,19 @@
 			setTimeout(function() {
 				var listaAsignaturas = json.alumno.expediente.listaAsignaturas;
 
-				//var fechaUltimoExamen = max_by(listaAsignaturasJson), &fechaExamen).fechaExamen;
-				var fechaUltimoExamen = listaAsignaturas[0].fechaExamen;//***
-
-				fechaUltimoExamen = moment.unix(fechaUltimoExamen).format("YYYYMMDD");
-				var tiempoDesde = ""+moment(fechaUltimoExamen, "YYYYMMDD").fromNow();
-				promise2.resolve(tiempoDesde);
+				var fechaUltimoExamen = jmespath.search(listaAsignaturas, 'max_by([*], &fechaExamen).fechaExamen');
+				if(fechaUltimoExamen.length === 0) {
+					promise2.reject(new Error('Cannot find fechaUltimoExamen'));
+				} else {
+					fechaUltimoExamen = moment.unix(fechaUltimoExamen).format('YYYYMMDD');
+					var tiempoDesde = ''+moment(fechaUltimoExamen, 'YYYYMMDD').fromNow();
+					if (tiempoDesde === 'Invalid date') {
+						promise2.reject(new Error('Invalid date from Moment'));
+					}
+					else {
+						promise2.resolve('Time from last exam: '+tiempoDesde);
+					}
+				}
 			}, 2000);
 
 			return promise2.promise;
@@ -99,15 +106,26 @@
 			var promise3 = Q.defer();
 
 			setTimeout(function() {
-				var fecha = moment.unix(moment.now()).format("DD/MM/YYYY");
-				promise3.resolve(fecha);
+				var fecha = moment().format('L');
+				if (fecha.length === 0) {
+					promise3.reject(new Error('Invalid date from Moment'));
+				}
+				else {
+					promise3.resolve('Today´s date: '+fecha);
+				}
 			}, 3000);
 
 			return promise3.promise;
 		}
 
-		//TODO gestión de errores
-		//TODO fix years
+
+		function pintaResultados(result) {
+			var div = document.createElement('div');
+			div.className = 'col-md-8 col-md-offset-3';
+			var print = document.createTextNode(result);
+			div.appendChild(print);
+			document.getElementById('showPromises').appendChild(div);
+		}
 
 	</script>
 </body>
